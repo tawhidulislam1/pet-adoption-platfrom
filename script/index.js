@@ -4,6 +4,7 @@ const loadCategory = () => {
     .then((res) => res.json())
     .then((data) => displayCategory(data.categories))
     .catch((error) => console.log(error));
+   
 };
 // all pet category display
 const displayCategory = (category) => {
@@ -12,12 +13,14 @@ const displayCategory = (category) => {
     const buttonContainer = document.createElement("div");
     buttonContainer.classList = "btn-borders";
     buttonContainer.innerHTML = `
-     <button id="id-${item.category}" onclick="loadCategoryPet('${item.category}')" class="tab category-btn flex-nowrap p-10 flex gap-5 border-blue-700 category-btn">
+     <button id="id-${item.category}" onclick="loadCategoryPet('${item.category}')" class="tab reloder category-btn flex-nowrap p-10 flex gap-5 border-blue-700 category-btn">
     <img class="w-10" src= ${item.category_icon}> <span class="font-semibold font-xl">${item.category}</span> </button>
   `;
     categoryContainer.append(buttonContainer);
   });
 };
+
+
 // all pet card load
 const loadPetCard = () => {
   fetch("https://openapi.programming-hero.com/api/peddy/pets")
@@ -54,14 +57,14 @@ const displayPetCard = (cards) => {
       </figure>
       <div class="card-body">
         <h2 class="card-title">${item.pet_name}</h2>
-        <p>Breed: ${item.breed}</p>
-        <p>Birth: ${item.date_of_birth}</p>
-        <p>Gender: ${item.gender}</p>
-        <p>Price: ${item.price}$</p>
+        <p><i class="fas fa-ellipsis-v"></i><i class="fas fa-ellipsis-v"></i><i class="fas fa-ellipsis-v"></i> Breed: ${item.breed}</p>
+        <p><i class="fas fa-birthday-cake"></i> Birth: ${item.date_of_birth}</p>
+        <p><i class="fas fa-mercury"></i> Gender: ${item.gender}</p>
+        <p><i class="fas fa-dollar-sign"></i>  Price: ${item.price}$</p>
         <div class="card-actions grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
-        <button class="btn btn-sm p-2"><img src="https://img.icons8.com/?size=50&id=24816&format=png" class="w-5"> </button>
+        <button class="btn btn-sm p-2" onclick="likePetCardImage('${item.image}')"><img src="https://img.icons8.com/?size=50&id=24816&format=png" class="w-5"> </button>
         <button class="btn btn-sm">Adopt</button>
-        <button class="btn btn-sm">Details</button>
+        <button class="btn btn-sm" onclick="loadPetDetails('${item.petId}')">Details</button>
         </div>
       </div>
     `;
@@ -75,21 +78,105 @@ const removeActive = () => {
     btn.classList.remove("active");
   }
 };
+
+// selecting loading div
+const loader = document.querySelector("#loading");
+
 // all pet categories wise load
 const loadCategoryPet = (category_name) => {
+  const buttonContainer = document.createElement("div");
+    buttonContainer.classList.remove("btn-borders") ;
+  loader.classList.add("display");
+  const petCard = document.getElementById("post-card");
+  petCard.innerHTML = `
+  <div id=""> </div>
+  <div id="loading"> </div>
+  <div id=""> </div>
+  `;
+
   fetch(
     ` https://openapi.programming-hero.com/api/peddy/category/${category_name}`
   )
     .then((res) => res.json())
     .then((data) => {
-       //remove all button color
-       removeActive();
-       // add acitve btn color
-       const buttons = document.getElementById(`id-${category_name}`);
-       buttons.classList.add("active");
-      displayPetCard(data.data)
+      //remove all button color
+      removeActive();
+      // add acitve btn color
+      const buttons = document.getElementById(`id-${category_name}`);
+      buttons.classList.add("active");
     })
     .catch((error) => console.log(error));
+  setTimeout(() => {
+    loader.classList.remove("display");
+    fetch(
+      ` https://openapi.programming-hero.com/api/peddy/category/${category_name}`
+    )
+      .then((res) => res.json())
+      .then((data) => {
+        //remove all button color
+        removeActive();
+        // add acitve btn color
+        const buttons = document.getElementById(`id-${category_name}`);
+        buttons.classList.add("active");
+        displayPetCard(data.data);
+      })
+      .catch((error) => console.log(error));
+}, 1000);
+  
 };
+
+// like pet image
+
+const likePetCardImage = (img) => {
+  const likedImageContaner = document.getElementById("add-card");
+  const div = document.createElement("div");
+  div.classList = "w-full h-20";
+  div.innerHTML = `
+      <img src='${img}' class="h-20" />   
+    `;
+  likedImageContaner.append(div);
+};
+
+// show per card details usgin modal
+
+// loadCategory Details
+const loadPetDetails = async (pet_id) => {
+  const url = `https://openapi.programming-hero.com/api/peddy/pet/${pet_id}`;
+  const res = await fetch(url);
+  const data = await res.json();
+  displayPetDetails(data.petData);
+};
+const displayPetDetails = (data) => {
+  const modalContainer = document.getElementById("modal-container");
+  modalContainer.innerHTML = `
+<figure>
+  <img src=${data.image}  class="w-10/12 mx-auto"/>
+</figure>
+ <div class="card-body p-4">
+        <h2 class="card-title font-extrabold">${data.pet_name}</h2>
+        <div class="flex justify-between items-center">
+          <div>
+            <p><i class="fas fa-ellipsis-v"></i><i class="fas fa-ellipsis-v"></i><i class="fas fa-ellipsis-v"></i> Breed: ${data.breed}</p>
+            <p><i class="fas fa-birthday-cake"></i> Birth: ${data.date_of_birth}</p>
+            
+            <p><i class="fas fa-venus"></i> Vaccinated Status: ${data.vaccinated_status}</p>
+          </div>
+          <div>
+            <p><i class="fas fa-dollar-sign"></i>  Price: ${data.price}$</p>
+            <p><i class="fas fa-mercury"></i> Gender: ${data.gender}</p>
+          </div>
+           
+        </div>
+            <div class="divider"></div>
+            <div>
+              <h4 class="font-bold text-xl">Details Information:</h4>
+              <p> ${data.pet_details}</p>            
+            </div>
+        </div>
+      </div>
+`;
+  document.getElementById("custom").showModal();
+};
+
 loadPetCard();
 loadCategory();
