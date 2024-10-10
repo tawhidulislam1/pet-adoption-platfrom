@@ -4,7 +4,6 @@ const loadCategory = () => {
     .then((res) => res.json())
     .then((data) => displayCategory(data.categories))
     .catch((error) => console.log(error));
-   
 };
 // all pet category display
 const displayCategory = (category) => {
@@ -19,7 +18,6 @@ const displayCategory = (category) => {
     categoryContainer.append(buttonContainer);
   });
 };
-
 
 // all pet card load
 const loadPetCard = () => {
@@ -57,14 +55,32 @@ const displayPetCard = (cards) => {
       </figure>
       <div class="card-body">
         <h2 class="card-title">${item.pet_name}</h2>
-        <p><i class="fas fa-ellipsis-v"></i><i class="fas fa-ellipsis-v"></i><i class="fas fa-ellipsis-v"></i> Breed: ${item.breed}</p>
-        <p><i class="fas fa-birthday-cake"></i> Birth: ${item.date_of_birth}</p>
-        <p><i class="fas fa-mercury"></i> Gender: ${item.gender}</p>
-        <p><i class="fas fa-dollar-sign"></i>  Price: ${item.price}$</p>
+        <p><i class="fas fa-ellipsis-v"></i><i class="fas fa-ellipsis-v"></i><i class="fas fa-ellipsis-v"></i> 
+        ${`
+         Breed: ${item.breed ? item.breed : "not available "}
+          `}</p>
+        <p><i class="fas fa-birthday-cake"></i> ${`
+           Birth: ${item.date_of_birth ? item.date_of_birth : "not available "}
+            `}</p>
+        <p><i class="fas fa-mercury"></i>
+        ${`
+          Gender: ${item.gender ? item.gender : "not available "}
+           `} 
+      </p>
+        <p><i class="fas fa-dollar-sign"></i> 
+        ${`
+          Price: ${item.price ? item.price : "not available "}
+           `} </p>
         <div class="card-actions grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
-        <button class="btn btn-sm p-2" onclick="likePetCardImage('${item.image}')"><img src="https://img.icons8.com/?size=50&id=24816&format=png" class="w-5"> </button>
-        <button class="btn btn-sm" onclick="adoptBtn(${item.petId})"  id="id-${item.petId}">Adopt</button>
-        <button class="btn btn-sm" onclick="loadPetDetails('${item.petId}')">Details</button>
+        <button class="btn btn-sm p-2" onclick="likePetCardImage('${
+          item.image
+        }')"><img src="https://img.icons8.com/?size=50&id=24816&format=png" class="w-5"> </button>
+        <button class="btn btn-sm" onclick="adoptBtn(${item.petId})"  id="id-${
+      item.petId
+    }">Adopt</button>
+        <button class="btn btn-sm" onclick="loadPetDetails('${
+          item.petId
+        }')">Details</button>
         </div>
       </div>
     `;
@@ -85,7 +101,7 @@ const loader = document.querySelector("#loading");
 // all pet categories wise load
 const loadCategoryPet = (category_name) => {
   const buttonContainer = document.createElement("div");
-    buttonContainer.classList.remove("btn-borders") ;
+  buttonContainer.classList.remove("btn-borders");
   loader.classList.add("display");
   const petCard = document.getElementById("post-card");
   petCard.innerHTML = `
@@ -121,8 +137,7 @@ const loadCategoryPet = (category_name) => {
         displayPetCard(data.data);
       })
       .catch((error) => console.log(error));
-}, 1000);
-  
+  }, 1000);
 };
 
 // like pet image
@@ -178,8 +193,8 @@ const displayPetDetails = (data) => {
   document.getElementById("custom").showModal();
 };
 const adoptBtn = (petId) => {
-  const adoptContainer = document.getElementById('adopt-container');
-  
+  const adoptContainer = document.getElementById("adopt-container");
+
   adoptContainer.innerHTML = `
      <div class="card-body p-4 flex flex-nowrap items-center">
           <img src="https://img.icons8.com/?size=100&id=qhdkUpp0zLSB&format=png&color=000000" class="w-10">
@@ -190,39 +205,37 @@ const adoptBtn = (petId) => {
   `;
 
   let num = 3;
-  const countdownElement = document.getElementById('countdown');
+  const countdownElement = document.getElementById("countdown");
 
   const clockId = setInterval(() => {
-      num = num - 1;
-      countdownElement.textContent = `${num}`;
-      if (num <= 0) {
-          clearInterval(clockId);
-      }
-      if(num === 0){
-        document.getElementById("adopt").close();
-      }
+    num = num - 1;
+    countdownElement.textContent = `${num}`;
+    if (num <= 0) {
+      clearInterval(clockId);
+    }
+    if (num === 0) {
+      document.getElementById("adopt").close();
+    }
   }, 1000);
   const disabled = document.getElementById(`id-${petId}`);
-  disabled.innerText = "adopted"; 
-  disabled.setAttribute('disabled', '')
+  disabled.innerText = "adopted";
+  disabled.setAttribute("disabled", "");
   document.getElementById("adopt").showModal();
-
 };
 
 const SortPrice = (cards) => {
   fetch("https://openapi.programming-hero.com/api/peddy/pets")
-  .then((res) => res.json())
-  .then((data) =>  {
-    const products = data.pets;
-    let sortedProducts = products.sort(
-      (p1, p2) => (p1.price < p2.price) ? 1 : (p1.price > p2.price) ? -1 : 0);
-      displayPetCard(sortedProducts)
+    .then((res) => res.json())
+    .then((data) => {
+      const products = data.pets;
+      let sortedProducts = products.sort((p1, p2) =>
+        p1.price < p2.price ? 1 : p1.price > p2.price ? -1 : 0
+      );
+      displayPetCard(sortedProducts);
+    })
 
-  })
- 
-  .catch((error) => console.log(error));
-  
- }
- 
+    .catch((error) => console.log(error));
+};
+
 loadPetCard();
 loadCategory();
