@@ -160,7 +160,15 @@
             </form>
         </footer>
 
+        <!-- addpot section modal  -->
         <!-- Open the modal using ID.showModal() method -->
+        <button class="btn hidden"  onclick="adopt.showModal()">open modal</button>
+        <dialog id="adopt" class="modal modal-bottom sm:modal-middle">
+            <div class="modal-box">
+                <div id="adopt-container"></div>
+            </div>
+        </dialog>
+        <!-- Open the modal using ID.showModal() method for details-->
         <button class="btn hidden" onclick="custom.showModal()">open
             modal</button>
         <dialog id="custom" class="modal modal-bottom sm:modal-middle">

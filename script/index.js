@@ -63,7 +63,7 @@ const displayPetCard = (cards) => {
         <p><i class="fas fa-dollar-sign"></i>  Price: ${item.price}$</p>
         <div class="card-actions grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
         <button class="btn btn-sm p-2" onclick="likePetCardImage('${item.image}')"><img src="https://img.icons8.com/?size=50&id=24816&format=png" class="w-5"> </button>
-        <button class="btn btn-sm">Adopt</button>
+        <button class="btn btn-sm" onclick="adoptBtn(${item.petId})"  id="id-${item.petId}">Adopt</button>
         <button class="btn btn-sm" onclick="loadPetDetails('${item.petId}')">Details</button>
         </div>
       </div>
@@ -177,6 +177,36 @@ const displayPetDetails = (data) => {
 `;
   document.getElementById("custom").showModal();
 };
+const adoptBtn = (petId) => {
+  const adoptContainer = document.getElementById('adopt-container');
+  
+  adoptContainer.innerHTML = `
+     <div class="card-body p-4 flex flex-nowrap items-center">
+          <img src="https://img.icons8.com/?size=100&id=qhdkUpp0zLSB&format=png&color=000000" class="w-10">
+          <h3 class="text-3xl font-bold">Congrats</h3>
+          <h3 class="text-xl font-semibold">Adoption process has started for your pet</h3>
+          <h3 class="text-xl font-semibold" id="countdown">3</h3>
+      </div>
+  `;
 
+  let num = 3;
+  const countdownElement = document.getElementById('countdown');
+
+  const clockId = setInterval(() => {
+      num = num - 1;
+      countdownElement.textContent = `${num}`;
+      if (num <= 0) {
+          clearInterval(clockId);
+      }
+      if(num === 0){
+        document.getElementById("adopt").close();
+      }
+  }, 1000);
+  const disabled = document.getElementById(`id-${petId}`);
+  disabled.innerText = "adopted"; 
+  disabled.setAttribute('disabled', '')
+  document.getElementById("adopt").showModal();
+
+};
 loadPetCard();
 loadCategory();
