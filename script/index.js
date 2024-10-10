@@ -208,5 +208,21 @@ const adoptBtn = (petId) => {
   document.getElementById("adopt").showModal();
 
 };
+
+const SortPrice = (cards) => {
+  fetch("https://openapi.programming-hero.com/api/peddy/pets")
+  .then((res) => res.json())
+  .then((data) =>  {
+    const products = data.pets;
+    let sortedProducts = products.sort(
+      (p1, p2) => (p1.price < p2.price) ? 1 : (p1.price > p2.price) ? -1 : 0);
+      displayPetCard(sortedProducts)
+
+  })
+ 
+  .catch((error) => console.log(error));
+  
+ }
+ 
 loadPetCard();
 loadCategory();
